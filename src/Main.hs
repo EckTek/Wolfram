@@ -32,6 +32,8 @@ main = do
     wolfram intOpts (head intOpts) (intOpts !! 2) firstLine
     exitWith (ExitSuccess)
 
+
 findFirstLine :: Int -> Int -> String -> String
-findFirstLine _ 0 line = line
-findFirstLine r startValue line = findFirstLine r (startValue - 1) (applyRules r line)
+findFirstLine r 0 line | (r < 0 || r >= 256) = "error"
+findFirstLine r 0 line = line
+findFirstLine r startValue line = findFirstLine r (startValue - 1) (applyRules r line rulesets)

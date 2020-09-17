@@ -1,46 +1,19 @@
 module Rules where
 
-applyRules :: Int -> [Char] -> [Char]
-applyRules r line = case r of
-    30 -> rule30 line "  "
-    90 -> rule90 line "  "
-    110 -> rule110 line "  "
+import Utils
 
+applyRules :: Int -> [Char] -> [String] -> [Char]
+applyRules r line rulesets | (r >= 0 && r <= 255) = allRules line "  " (rulesets !! r)
+                           | otherwise = "error"
 
-rule30 :: [Char] -> [Char] -> [Char]
-rule30 (l:m:r:xs) line = case (l, m, r) of
-    ('*', '*', '*') -> rule30 (m:r:xs) (line ++ [' '])
-    ('*', '*', ' ') -> rule30 (m:r:xs) (line ++ [' '])
-    ('*', ' ', '*') -> rule30 (m:r:xs) (line ++ [' '])
-    ('*', ' ', ' ') -> rule30 (m:r:xs) (line ++ ['*'])
-    (' ', '*', '*') -> rule30 (m:r:xs) (line ++ ['*'])
-    (' ', '*', ' ') -> rule30 (m:r:xs) (line ++ ['*'])
-    (' ', ' ', '*') -> rule30 (m:r:xs) (line ++ ['*'])
-    (' ', ' ', ' ') -> rule30 (m:r:xs) (line ++ [' '])
-rule30 _ line = line ++ "  "
-
-
-rule90 :: [Char] -> [Char] -> [Char]
-rule90 (l:m:r:xs) line = case (l, m, r) of
-    ('*', '*', '*') -> rule90 (m:r:xs) (line ++ [' '])
-    ('*', '*', ' ') -> rule90 (m:r:xs) (line ++ ['*'])
-    ('*', ' ', '*') -> rule90 (m:r:xs) (line ++ [' '])
-    ('*', ' ', ' ') -> rule90 (m:r:xs) (line ++ ['*'])
-    (' ', '*', '*') -> rule90 (m:r:xs) (line ++ ['*'])
-    (' ', '*', ' ') -> rule90 (m:r:xs) (line ++ [' '])
-    (' ', ' ', '*') -> rule90 (m:r:xs) (line ++ ['*'])
-    (' ', ' ', ' ') -> rule90 (m:r:xs) (line ++ [' '])
-rule90 _ line = line ++ "  "
-
-
-rule110 :: [Char] -> [Char] -> [Char]
-rule110 (l:m:r:xs) line = case (l, m, r) of
-    ('*', '*', '*') -> rule110 (m:r:xs) (line ++ [' '])
-    ('*', '*', ' ') -> rule110 (m:r:xs) (line ++ ['*'])
-    ('*', ' ', '*') -> rule110 (m:r:xs) (line ++ ['*'])
-    ('*', ' ', ' ') -> rule110 (m:r:xs) (line ++ [' '])
-    (' ', '*', '*') -> rule110 (m:r:xs) (line ++ ['*'])
-    (' ', '*', ' ') -> rule110 (m:r:xs) (line ++ ['*'])
-    (' ', ' ', '*') -> rule110 (m:r:xs) (line ++ ['*'])
-    (' ', ' ', ' ') -> rule110 (m:r:xs) (line ++ [' '])
-rule110 _ line = line ++ "  "
+allRules :: [Char] -> [Char] -> [Char] -> [Char]
+allRules (l:m:r:xs) line ruleset
+   | (l == '*' && m == '*' && r == '*') = allRules (m:r:xs) (line ++ [ruleset !! 0]) ruleset
+   | (l == '*' && m == '*' && r == ' ') = allRules (m:r:xs) (line ++ [ruleset !! 1]) ruleset
+   | (l == '*' && m == ' ' && r == '*') = allRules (m:r:xs) (line ++ [ruleset !! 2]) ruleset
+   | (l == '*' && m == ' ' && r == ' ') = allRules (m:r:xs) (line ++ [ruleset !! 3]) ruleset
+   | (l == ' ' && m == '*' && r == '*') = allRules (m:r:xs) (line ++ [ruleset !! 4]) ruleset
+   | (l == ' ' && m == '*' && r == ' ') = allRules (m:r:xs) (line ++ [ruleset !! 5]) ruleset
+   | (l == ' ' && m == ' ' && r == '*') = allRules (m:r:xs) (line ++ [ruleset !! 6]) ruleset
+   | (l == ' ' && m == ' ' && r == ' ') = allRules (m:r:xs) (line ++ [ruleset !! 7]) ruleset
+allRules _ line ruleset = line ++ "  "

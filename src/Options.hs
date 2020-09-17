@@ -10,24 +10,18 @@ checkOptValues :: Int -> [String] -> IO ()
 checkOptValues 0 [] = return ()
 checkOptValues n (x:xs) = case x of
        "null"  -> exit "Error: Invalid option."
-       "error" | n == 5 -> exit "Error: Invalid --rule value."
-               | n == 4 -> exit "Error: Invalid --start value."
-               | n == 3 -> exit "Error: Invalid --lines value."
-               | n == 2 -> exit "Error: Invalid --window value."
-               | n == 1 -> exit "Error: Invalid --move value."
+       "error" | n == 5 -> exit "Error: Invalid --rule option value."
+               | n == 4 -> exit "Error: Invalid --start option value."
+               | n == 3 -> exit "Error: Invalid --lines option value."
+               | n == 2 -> exit "Error: Invalid --window option value."
+               | n == 1 -> exit "Error: Invalid --move option value."
        _       -> checkOptValues (n - 1) (xs)
 
 
 findRuleOpt :: [String] -> IO ()
-findRuleOpt (x:xs)   | notElem "--rule" (x:xs) = exit "Error: No --rule option found."
-                     | otherwise = return ()
+findRuleOpt (x:xs) | notElem "--rule" (x:xs) = exit "Error: No --rule option found."
+                   | otherwise = return ()
 
-
-goodRuleValue :: [Char] -> Bool
-goodRuleValue rule | rule == "30" = True
-                   | rule == "90" = True
-                   | rule == "110" = True
-                   | otherwise = False
 
 isPositiveInt :: [Char] -> Bool
 isPositiveInt [] = True
@@ -43,20 +37,20 @@ replaceNth (x:xs) (n, a) | n < 0 = x:xs
 
 getOptions :: [String] -> [String] -> [String]
 getOptions (x:val:xs) opt = case x of
-       "--rule"    -> case goodRuleValue val of
+       "--rule"   -> case isPositiveInt val of
               True -> getOptions xs (replaceNth opt (0, val))
-              _    -> getOptions xs (replaceNth opt (0, "error"))
-       "--start"   -> case isPositiveInt val of
+              _ -> getOptions xs (replaceNth opt (0, "error"))
+       "--start"  -> case isPositiveInt val of
               True -> getOptions xs (replaceNth opt (1, val))
-              _    -> getOptions xs (replaceNth opt (1, "error"))
-       "--lines"   -> case isPositiveInt val of
+              _ -> getOptions xs (replaceNth opt (1, "error"))
+       "--lines"  -> case isPositiveInt val of
               True -> getOptions xs (replaceNth opt (2, val))
-              _    -> getOptions (val:xs) (replaceNth opt (2, "-1"))
-       "--window"  -> case isPositiveInt val of
-              True -> getOptions xs (replaceNth opt (3, val))
-              _    -> getOptions xs (replaceNth opt (3, "error"))
-       "--move"    -> case readMaybe val :: Maybe Int of
-              Just x  -> getOptions xs (replaceNth opt (4, val))
+              _ -> getOptions (val:xs) (replaceNth opt (2, "-1"))
+       "--window" -> case readMaybe val :: Maybe Int of
+              Just x -> getOptions xs (replaceNth opt (3, val))
+              _ -> getOptions xs (replaceNth opt (3, "error"))
+       "--move"   -> case readMaybe val :: Maybe Int of
+              Just x -> getOptions xs (replaceNth opt (4, val))
               Nothing -> getOptions xs (replaceNth opt (4, "error"))
        otherwise -> ["null"]
 getOptions  _ opt = opt
